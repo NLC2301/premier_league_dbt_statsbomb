@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_statsbomb__matches
+    description: One row per match, with competition, season, team and score fields flattened out of the raw JSON.
+    columns:
+      - name: match_id
+        description: Unique StatsBomb match identifier.
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_statsbomb__events
+    description: One row per event (pass, shot, carry and so on). Universal fields are flattened; event-specific structs are left nested.
+    columns:
+      - name: event_id
+        description: Unique identifier for the event (UUID).
+        data_tests:
+          - unique
+          - not_null
+      - name: match_id
+        description: The match the event belongs to.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_statsbomb__matches')
+                field: match_id
+
+  - name: stg_statsbomb__lineups
+    description: One row per player per team per match.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - match_id
+              - player_id
+    columns:
+      - name: match_id
+        data_tests:
+          - not_null
+      - name: player_id
+        data_tests:
+          - not_null
+          

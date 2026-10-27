@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: statsbomb
+    description: Raw StatsBomb Open Data loaded from JSON by load_statsbomb.py
+    schema: raw
+    tables:
+      - name: competitions
+      - name: matches
+      - name: events
+      - name: lineups
